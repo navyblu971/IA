@@ -7,38 +7,41 @@ import pandas
 import warnings
 
 
-def myTransform(x ):
-	float (x.replace(',', '.'))
-	return
+def myTransform(x):
+	#return x.replace('nan', '0')
+	return x
+
+def map_float(x):
+	return float(x.replace(',','.'))
+
 
 
 
 filename = '../cours.csv'
 csv_delimiter =';'
 
-df = pandas.read_csv(filename, sep=csv_delimiter, dtype=str, decimal=',' , skiprows=1)
+df = pandas.read_csv(filename, sep=csv_delimiter,na_values=0,  dtype=str, decimal=',' , skiprows=1)
 data = df.values
-print (data.shape)
-print (data[0,:])
+#print (data.shape)
+#print (data[0,:])
 #event = {'Valeur de test': data[Ø] , (for name in len (data[Ø]): print (')}
 
-y = numpy.zeros((2250,254),dtype=numpy.float64)
+#y = numpy.zeros((2250,254),dtype=numpy.float64)
+w, h = 254 , 2250;
+y = [[0 for x in range(w)] for y in range(h)]
+
 
 print ("y" , y)
-print ("y,:" , y[0,:])
+print ("y,:" , y[:][:] )
 
 
 line =0
 while line < 254:
-	'''
-	for d in data[line,:]:
-	y[line,] += d
-	'''
-	#str = data[line,1:]
-	data[line,1:] = map (myTransform ,data[line,1:] )
-	y[line,:]=data[line,1:]
-
-line+=1
+	tmp = list( map (myTransform ,data[line,1:] ) )
+	print (tmp)
+	#y[line,:]= list (map(map_float, tmp))
+	y[line][:]= tmp
+	line+=1
 
 
 
@@ -91,9 +94,8 @@ for value in data[1,:]:
 
 print ("y" , y)
 
-def myTransform(x ):
-	float (x.transform (',', '.'))
-	return
+
+
 
 
 
