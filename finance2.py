@@ -9,7 +9,10 @@ import warnings
 
 def myTransform(x):
 	#return x.replace('nan', '0')
-	return x
+	if type(x) == str:
+		return float(x.replace(',','.' ))
+	else:
+		return x
 
 def map_float(x):
 	return float(x.replace(',','.'))
@@ -44,20 +47,25 @@ while line < 254:
 	line+=1
 
 
-line = 0
-while (line < 254):
+line = 1
+while (line < 10):
 	#on ne touche pas à la premiere colonne
 	col=0
-	while (col < 2250):
+	while (col < 100):
 		#test colonne exclue ici
-		if y[line-1][col] > y[line][col]:
-			y[line][col] = 0
-		else:
-			y[line][col] = 1
+		#try:
+			if float(y[line-1][col]) > float (y[line][col]):
+				y[line][col] = 0
+			else:
+				y[line][col] = 1
+		#except:
+    			#print("Voici l'erreur :", exception_retournee)
+		#		print("col", col)
+		#		print("line" ,line)
 
-		col+=1
+			col+=1
 	line+=1
-	
+
 
 
 
@@ -111,7 +119,7 @@ for value in data[1,:]:
 	i+=1
 '''
 
-print ("y" , y)
+print ("y" , y[1][:])
 
 
 
