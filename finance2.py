@@ -44,6 +44,25 @@ while line < 254:
 	line+=1
 
 
+line = 0
+while (line < 254):
+	#on ne touche pas à la premiere colonne
+	col=0
+	while (col < 2250):
+		#test colonne exclue ici
+		if y[line-1][col] > y[line][col]:
+			y[line][col] = 0
+		else:
+			y[line][col] = 1
+
+		col+=1
+	line+=1
+	
+
+
+
+
+
 
 '''
 
