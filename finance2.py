@@ -244,12 +244,12 @@ classifier = tf.estimator.DNNClassifier(
 
 
 
-
+print (dict(features))
 
 #train_input_fn(features, labels, 100)
 
 
-
+'''
 print ("train the model ..")
 # Train the Model.
 classifier.train(
@@ -266,3 +266,4 @@ print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
 
 print (eval_result)
+'''
