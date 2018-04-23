@@ -65,9 +65,9 @@ def _parse_line(COLUMNS_NAME,column_number ,  line):
 def train_input_fn(features, labels, batch_size):
 	"""An input function for training"""
 	# Convert the inputs to a Dataset.
-	dataset = tf.data.Dataset.from_tensor_slices( {"features": features,"labels": labels})
-    #dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
-	#dataset = tf.data.Dataset.from_tensor_slices((features, labels))
+	#dataset = tf.data.Dataset.from_tensor_slices( {"features": features,"labels": labels})
+	#dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
+	dataset = tf.data.Dataset.from_tensor_slices((features, labels))
 	# Shuffle, repeat, and batch the examples.
 	dataset = dataset.shuffle(1000).repeat().batch(batch_size)
 	# Return the dataset.
@@ -244,12 +244,12 @@ classifier = tf.estimator.DNNClassifier(
 
 
 
-print (dict(features))
+#print (dict(features))
 
 #train_input_fn(features, labels, 100)
 
 
-'''
+
 print ("train the model ..")
 # Train the Model.
 classifier.train(
@@ -266,4 +266,3 @@ print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
 
 print (eval_result)
-'''
