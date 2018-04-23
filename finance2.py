@@ -6,6 +6,7 @@ import numpy
 import pandas as pd
 import warnings
 import tensorflow as tf
+import itertools
 
 
 
@@ -126,11 +127,19 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
 			number_of_rows = data.shape[0]
 			number_of_columns = data.shape[1]
 
+			#limite entre les features et les tests..
+			type_size = int (data.shape[0] / 2 )
+
 			w, h = number_of_columns , number_of_rows;
 			y = [[0 for x in range(w)] for y in range(h)]
 
 
+
+
 			features = []
+			_y = []
+			test_x =[]
+			test_y =[]
 			#dict(zip(columns_list,[0 for i in columns_list]))
 
 
@@ -163,7 +172,12 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
 					else:
 						y[line][col] = 1
 
-					features.append( dict(zip(columns_list,y[line])) )
+					if line <  type_size:
+						features.append( dict(zip(columns_list,y[line])) )
+					else:
+						test_x.append( dict(zip(columns_list,y[line])) )
+
+
 					print (line)
 					backspace(len(str(line)))
 					#print (features)
@@ -183,15 +197,23 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
 
 			labels = features[column_number]
 			del features[column_number]
-			return features, labels, columns_list
+
+			#print ("step 1")
+			#print (labels.shape())
+			_y = dict(itertools.islice(labels.items(), number_of_rows-1))
+			#print ("step 2")
+			#print (_y)
+			test_y = dict(itertools.islice(labels.items(), type_size ,number_of_rows-1 ))
+			#print(test_y)
+
+
+			return features, _y, test_x, test_y , columns_list
 
 
 
-
-print ("step 1")
-features, labels, COLUMNS_LIST= getFeaturesAndLabel()
+features, labels, test_x, test_y,  COLUMNS_LIST = getFeaturesAndLabel()
 print ("step 2")
-#features, labels = getFeaturesAndLabel (data , 3)
+	#features, labels = getFeaturesAndLabel (data , 3)
 print ("step 3")
 #print (features[2248][:])
 #print (labels)
@@ -201,8 +223,7 @@ print ("step 4")
 Step = 0.1
 
 my_feature_columns = [
-    tf.feature_column.numeric_column(name)
-    for name in COLUMNS_LIST]
+tf.feature_column.numeric_column(name) for name in COLUMNS_LIST]
 
 
 print ("step 5")
@@ -225,6 +246,9 @@ classifier = tf.estimator.DNNClassifier(
 
 
 
+#train_input_fn(features, labels, 100)
+
+
 
 print ("train the model ..")
 # Train the Model.
@@ -233,8 +257,12 @@ classifier.train(
 
 
 
+
 eval_result = classifier.evaluate(
-	input_fn=train_input_fn(features, labels,100),  steps=Step)
+	input_fn=train_input_fn(test_x, test_y,100),  steps=Step)
+
+
+print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
 
 print (eval_result)
