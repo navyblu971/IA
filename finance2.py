@@ -9,22 +9,38 @@ import tensorflow as tf
 
 
 
-def getData(y_name='AALBERTS'):
-    """Returns the iris dataset as (train_x, train_y), (test_x, test_y)."""
-    #train_path, test_path = maybe_download()
 
-    data = pd.read_csv("../cours.csv", sep=';', header=0, na_values=0,  dtype=str, decimal=',' )
-    data_x, data_y = data, data.pop('749352')
+def getData(y_name='749352'):
+	file_name = "../cours.csv"
 
-    '''
+	#columns_list = pd.read_csv(file_name, nrows=1).columns
+	data = pd.read_csv(file_name, sep=';',   dtype=str, decimal=',' )
+	pd.fillna(0)
+
+	data_x, data_y = data, data.pop(y_name)
+
+	columns_list = pd.read_csv(file_name, nrows=0, sep=';').columns.values.tolist()
+
+	print (columns_list)
+
+	''' on enleve le y_name qui est utilisé comme label, ils sont deux fois dans la liste d'ou les deux removes ...'''
+	columns_list.remove('Identifiant')
+	columns_list.remove(y_name)
+	columns_list.remove(y_name+".1")
+
+	#df = pd.read_csv(file_name, nrows=1)
+	#columns_list = list(df.columns.values)
+	#columns_list = list (range(255))
+
+
+	'''
     test = pd.read_csv(test_path, names=CSV_COLUMN_NAMES, header=0)
     test_x, test_y = test, test.pop(y_name)
-    '''
+	'''
 
-    return data_x, data_y
+	return data_x, data_y, columns_list
 
-
-##print (load_data())
+	##print (load_data())
 
 
 def train_input_fn(features, labels, batch_size):
@@ -34,9 +50,13 @@ def train_input_fn(features, labels, batch_size):
     #dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
 	#dataset = tf.data.Dataset.from_tensor_slices((features, labels))
 	# Shuffle, repeat, and batch the examples.
-	#dataset = dataset.shuffle(1000).repeat().batch(batch_size)
+	dataset = dataset.shuffle(1000).repeat().batch(batch_size)
 	# Return the dataset.
 	return dataset
+
+
+
+
 
 
 
@@ -65,26 +85,20 @@ def map_float(x):
 #y = numpy.zeros((2250,254),dtype=numpy.float64)
 
 
-def getFeatures (DATA) :
+def getFeaturesAndLabel (DATA , column_number) :
+	'''return features and y as column_number '''
 
-			w, h = 254 , 2250;
+			number_of_rows = DATA.shape[0]
+			number_of_columns = DATA.shape[1]
+
+			w, h = number_of_columns , number_of_rows;
 			y = [[0 for x in range(w)] for y in range(h)]
 
 
-			#print ("y" , y)
-			#print ("y,:" , y[:][:] )
-			#print ("type y:" , type(y) )
-			#print (y[0, 1])
-
-
-			#print("iloc" , DATA.iloc[1])
 
 			line =1
-			while line < 2248:
-				#print("line-->" , line)
+			while line < number_of_rows:
 				tmp = list( map (myTransform ,DATA.iloc[line,1:] ) )
-				#print ("tmp ", tmp)
-	#y[line,:]= list (map(map_float, tmp))
 				y[line-1][:]= tmp
 				line+=1
 
@@ -92,10 +106,10 @@ def getFeatures (DATA) :
 
 
 			line = 2
-			while (line < 2248):
+			while (line < number_of_rows):
 				#on ne touche pas à la premiere colonne
 				col=1
-				while (col < 253):
+				while (col < number_of_columns):
 					#test colonne exclue ici
 					#try:
 					#print(y[line-1][col])
@@ -112,26 +126,26 @@ def getFeatures (DATA) :
 					col+=1
 				line+=1
 
-			return y ##features
+			return y, y[:][column_number]##features
 
 print ("step 1")
-data, labels = getData()
+features, labels, COLUMNS_LIST= getData()
 print ("step 2")
-features = getFeatures (data)
+#features, labels = getFeaturesAndLabel (data , 3)
 print ("step 3")
-print (features[2248][:])
+#print (features[2248][:])
+print (labels)
+print ("step 4")
 
 #train_input_fn(features, labels, 100)
 Step = 0.1
 
+my_feature_columns = [
+    tf.feature_column.numeric_column(name)
+    for name in COLUMNS_LIST]
 
-x = tf.placeholder(tf.float32,shape=[1,1000])
 
-y = x * 2
-
-with tf.Session() as session:
-    result = session.run(y, feed_dict={x: [1, 2, 3]})
-    print(result)
+print ("step 5")
 
 
 
@@ -139,7 +153,7 @@ with tf.Session() as session:
 
 # Build a DNN with 2 hidden layers and 10 nodes in each hidden layer.
 
-'''
+
 classifier = tf.estimator.DNNClassifier(
     feature_columns=my_feature_columns,
     # Two hidden layers of 10 nodes each.
@@ -151,68 +165,3 @@ classifier = tf.estimator.DNNClassifier(
 # Train the Model.
 classifier.train(
     input_fn=train_input_fn(features, labels, 100), steps=Step)
-
-
-'''
-
-'''
-
-x = data[1,1:].transform(',' , '.')
-y[0,:] = x.astype(numpy.float)
-
-
-
-
-
-print ("y",y)
-
-i = 0
-for value in data[1,:]:
-	#events = dict( ('{}', {}).format( name, i))
-	#events[name]
-
-	if i == 0:
-
-		if value == "NAN":
-                        y[i,0] = 0
-
-
-		if type(value)==str and value != "NAN":
-                         y[i,0] = float(value.replace(',', '.'))
-
-
-		if type(value)==float:
-			y[i,0] = value
-
-	if i >0:
-
-		if value == "NAN":
-                        y[i,0] = 0
-
-
-		if type(value)==str and value != "NAN":
-                         y[i,0] = float(value.replace(',', '.'))
-
-
-		if type(value)==float:
-			y[i,0] = value
-
-
-
-	i+=1
-'''
-
-print ("y" , y[1][:])
-
-
-
-
-
-
-#i = 0
-#for d in data:
-
-#	for j in (0, 30)
-#	y[0] = d.split(csv_delimiter)[0]
-#	y[i] = d.split(csv_delimiter)[j] = 1
-#	print ("d", d)
