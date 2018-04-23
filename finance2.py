@@ -85,11 +85,28 @@ def map_float(x):
 #y = numpy.zeros((2250,254),dtype=numpy.float64)
 
 
-def getFeaturesAndLabel (DATA , column_number) :
+def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352') :
 	'''return features and y as column_number '''
 
-			number_of_rows = DATA.shape[0]
-			number_of_columns = DATA.shape[1]
+			#columns_list = pd.read_csv(file_name, nrows=1).columns
+			data = pd.read_csv(file_name, sep=';',   dtype=str, decimal=',' )
+			pd.fillna(0)
+
+
+			columns_list = pd.read_csv(file_name, nrows=0, sep=';').columns.values.tolist()
+
+			print (columns_list)
+
+			''' on enleve le y_name qui est utilisé comme label, ils sont deux fois dans la liste d'ou les deux removes ...'''
+
+			column_number = columns_list.index(y_name)
+
+			columns_list.remove('Identifiant')
+			columns_list.remove(y_name)
+			columns_list.remove(y_name+".1")
+
+			number_of_rows = data.shape[0]
+			number_of_columns = data.shape[1]
 
 			w, h = number_of_columns , number_of_rows;
 			y = [[0 for x in range(w)] for y in range(h)]
@@ -126,10 +143,14 @@ def getFeaturesAndLabel (DATA , column_number) :
 					col+=1
 				line+=1
 
-			return y, y[:][column_number]##features
+			return y, y[:][column_number],columns_list ##features
+
+
+
+
 
 print ("step 1")
-features, labels, COLUMNS_LIST= getData()
+features, labels, COLUMNS_LIST= getFeaturesAndLabel()
 print ("step 2")
 #features, labels = getFeaturesAndLabel (data , 3)
 print ("step 3")
