@@ -232,22 +232,29 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
 
 
             t=0
-            targets = [range(number_of_rows)]
-            print ("targets=" , targets)
+            targets = np.arange(0 , number_of_rows-1)
             while t < number_of_rows -1 :
                     print (t)
-                    targets[t] = 1 #y[t][labels_column_number]
+                    targets[t] = y[t][labels_column_number]
                     t=t+1
+
 
 
             return features, targets, number_of_rows, number_of_columns, columns_list
 
 
 
-features, targets2, nb_rows, nb_columns,   COLUMNS_LIST = getFeaturesAndLabel()
+features, targets, nb_rows, nb_columns,   COLUMNS_LIST = getFeaturesAndLabel()
 
 print ("features[0][:]", features[0][:])
 print ("features[1][:]" , features[1][:])
+
+
+features = np.asarray(features)
+
+print (format(features))
+
+
 
 
 
@@ -281,6 +288,13 @@ train = optimizer.minimize(cost)
 
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
+
+
+writer = tf.summary.FileWriter('.')
+writer.add_graph(tf.get_default_graph())
+
+
+print(sess.run(tf_features))
 
 for e in range(10000):
 
