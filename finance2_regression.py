@@ -107,8 +107,9 @@ def map_float(x):
 def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
             '''return features and y as column_number '''
 
-            NB_COLUMNS = 10
-            data = pd.read_csv(file_name, sep=';',   dtype=str, decimal=',' , nrows=100, usecols= range(NB_COLUMNS))
+            NB_COLUMNS = 80
+            NB_ROWS = 100
+            data = pd.read_csv(file_name, sep=';',   dtype=str, decimal=',' , nrows=NB_ROWS, usecols= range(NB_COLUMNS))
 
 
 
@@ -133,11 +134,17 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
             w, h = number_of_columns , number_of_rows;
             y = [[0 for x in range(w)] for y in range(h)]
             line =1
-            while line < number_of_rows:
+
+            while line < number_of_rows-1:
                 tmp = list( map (myTransform ,data.iloc[line,1:]))
-                y[line-1][:]= tmp
+                y[line][:]= tmp
+                #print(line)
+                #print(y[line][:])
                 #print(tmp)
                 line+=1
+
+
+
 
 
 
@@ -221,17 +228,31 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
             #print(test_y)
 
             features = y
-            return features, y[:][labels_column_number] , number_of_rows, number_of_columns, columns_list
 
 
 
-features, targets, nb_rows, nb_columns,   COLUMNS_LIST = getFeaturesAndLabel()
+            t=0
+            targets = [range(number_of_rows)]
+            print ("targets=" , targets)
+            while t < number_of_rows -1 :
+                    print (t)
+                    targets[t] = 1 #y[t][labels_column_number]
+                    t=t+1
+
+
+            return features, targets, number_of_rows, number_of_columns, columns_list
+
+
+
+features, targets2, nb_rows, nb_columns,   COLUMNS_LIST = getFeaturesAndLabel()
 
 print ("features[0][:]", features[0][:])
 print ("features[1][:]" , features[1][:])
 
 
 
+#targets = np.asarray(targets2)
+print ("targets" , targets)
 tf_features = tf.placeholder(tf.float32, shape=[None, nb_columns])
 tf_targets = tf.placeholder(tf.float32, shape=[None, nb_rows])
 
