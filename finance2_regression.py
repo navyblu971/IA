@@ -136,7 +136,7 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
             line =1
 
             while line < number_of_rows-1:
-                tmp = list( map (myTransform ,data.iloc[line,1:]))
+                tmp =  map (myTransform ,data.iloc[line,1:])
                 y[line][:]= tmp
                 #print(line)
                 #print(y[line][:])
@@ -234,7 +234,7 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
             t=0
             targets = np.arange(0 , number_of_rows-1)
             while t < number_of_rows -1 :
-                    print (t)
+                    #print (t)
                     targets[t] = y[t][labels_column_number]
                     t=t+1
 
@@ -246,8 +246,8 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
 
 features, targets, nb_rows, nb_columns,   COLUMNS_LIST = getFeaturesAndLabel()
 
-print ("features[0][:]", features[0][:])
-print ("features[1][:]" , features[1][:])
+#print ("features[0][:]", features[0][:])
+#print ("features[1][:]" , features[1][:])
 
 
 features = np.asarray(features)
