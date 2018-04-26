@@ -237,7 +237,7 @@ tf_targets = tf.placeholder(tf.float32, shape=[None, nb_rows])
 
     # First
 w1 = tf.Variable(tf.random_normal([nb_columns, 3]))
-b1 = tf.Variable(tf.zeros([nb_columns]))
+b1 = tf.Variable(tf.zeros([3]))
     # Operations
 z1 = tf.matmul(tf_features, w1) + b1
 a1 = tf.nn.sigmoid(z1)
