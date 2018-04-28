@@ -82,6 +82,7 @@ def train_input_fn(features, labels, batch_size):
 def myTransform(x):
     #return x.replace('nan', '0')
     if type(x) == str:
+        x.replace('nan', '0')
         return float(x.replace(',','.' ))
     else:
         return x
@@ -104,14 +105,14 @@ def map_float(x):
 #y = numpy.zeros((2250,254),dtype=numpy.float64)
 
 
-def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
+def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='679540' ) :
             '''return features and y as column_number '''
 
-            NB_COLUMNS = 80
-            NB_ROWS = 100
+            NB_COLUMNS = 10
+            NB_ROWS = 20
             data = pd.read_csv(file_name, sep=';',   dtype=str, decimal=',' , nrows=NB_ROWS, usecols= range(NB_COLUMNS))
 
-
+            data.replace(np.nan, '0', regex=True)
 
             columns_list = pd.read_csv(file_name, nrows=0, sep=';' , usecols=range (NB_COLUMNS)).columns.values.tolist()
 
@@ -127,21 +128,42 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
 
             number_of_rows = data.shape[0]
             number_of_columns = data.shape[1]
-            print ("number of columns :",data.shape[1] )
-            print ("number_of_rows :",data.shape[0] )
+            print ("number of columns :",number_of_columns )
+            print ("number_of_rows :",number_of_rows )
             #limite entre les features et les tests..
             type_size = int (data.shape[0] / 2 )
-            w, h = number_of_columns , number_of_rows;
-            y = [[0 for x in range(w)] for y in range(h)]
-            line =1
 
-            while line < number_of_rows-1:
-                tmp =  map (myTransform ,data.iloc[line,1:])
-                y[line][:]= tmp
+            y = np.zeros((number_of_rows, number_of_columns))
+            w, h = number_of_columns , number_of_rows;
+            #y = [[0 for x in range(w)] for y in range(h)]
+            line =1
+            col =0
+            tmp = []
+            while line < number_of_rows:
+                #y[line][:]=  map (myTransform ,data.iloc[line,1:])
+                '''
+                print (data.iloc[line,1:])
+                tmp  = data.iloc[line,1:]
+
+
+                tmp = np.array (map (myTransform ,data.iloc[line,1:number_of_columns]))
+                tmp = np.asarray(tmp)
+                print ("tmp.shape" , tmp.shape )
+                print (tmp)
+                y = np.vstack((y, tmp))
                 #print(line)
-                #print(y[line][:])
+                #print("y", y)
                 #print(tmp)
+                '''
+                col=1
+                while col < number_of_columns :
+                    y[line][col]=myTransform(data.iloc[line,col])
+                    col += 1
+
                 line+=1
+
+
+            print ("y" , y)
 
 
 
@@ -232,8 +254,8 @@ def getFeaturesAndLabel (file_name = "../cours.csv" , y_name='749352' ) :
 
 
             t=0
-            targets = np.arange(0 , number_of_rows-1)
-            while t < number_of_rows -1 :
+            targets = np.arange(0 , number_of_rows)
+            while t < number_of_rows-1  :
                     #print (t)
                     targets[t] = y[t][labels_column_number]
                     t=t+1
@@ -250,18 +272,36 @@ features, targets, nb_rows, nb_columns,   COLUMNS_LIST = getFeaturesAndLabel()
 #print ("features[1][:]" , features[1][:])
 
 
-features = np.asarray(features)
+#features = np.asarray(features) #A REMETTRE
 
-print (format(features))
+#features = np.random.randn(100, 80)
+
+#print (format(features))
 
 
+#test
+#targets =  np.random.randn(nb_rows, nb_columns) + 3
+#targets = targets.reshape(-1, 1)
 
+#test datasets
 
+#features, targets = (np.random.sample((nb_rows,nb_columns)), np.random.sample((nb_rows,1)))
+
+print ("features shape :" , features.shape)
+print ("target shape " , targets.shape)
+
+#targets = np.random.sample((nb_rows,1))
+#dataset = tf.data.Dataset.from_tensor_slices((features,targets))
+
+targets = targets.reshape(-1, 1)
+print ("target.dtype :" , targets.dtype)
 
 #targets = np.asarray(targets2)
 print ("targets" , targets)
 tf_features = tf.placeholder(tf.float32, shape=[None, nb_columns])
-tf_targets = tf.placeholder(tf.float32, shape=[None, nb_rows])
+tf_targets = tf.placeholder(tf.float32, shape=[None, 1])
+
+
 
     # First
 w1 = tf.Variable(tf.random_normal([nb_columns, 3]))
@@ -294,7 +334,7 @@ writer = tf.summary.FileWriter('.')
 writer.add_graph(tf.get_default_graph())
 
 
-print(sess.run(tf_features))
+#print(sess.run(tf_features))
 
 for e in range(10000):
 
